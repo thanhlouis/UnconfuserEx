@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     branches:
-      - main # Workflow sẽ chạy mỗi khi bạn push code lên nhánh main
+      - main 
 
 jobs:
   build:
