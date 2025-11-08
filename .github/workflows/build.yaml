@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     branches:
-      - main  # Hoặc tên nhánh chính của bạn, ví dụ: master
+      - build  # Hoặc tên nhánh chính của bạn, ví dụ: master
 
 jobs:
   build:
