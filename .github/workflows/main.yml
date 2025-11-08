@@ -1,0 +1,48 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main # Workflow sẽ chạy mỗi khi bạn push code lên nhánh main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore Dependencies
+      run: dotnet restore UnConfuserEx.sln
+
+    - name: Build Solution
+      run: dotnet build UnConfuserEx.sln -c Release --no-restore
+
+    - name: Publish Artifacts
+      run: |
+        dotnet publish UnConfuserEx/UnConfuserEx.csproj -c Release -o ./publish
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: UnConfuserEx
+        path: ./publish
+
+    - name: Create Release
+      # LƯU Ý: Bước này thường chỉ được dùng khi tạo tag.
+      # Nếu chạy trên nhánh, nó sẽ tạo một release nháp (draft) hoặc release mới mỗi lần.
+      # Nếu bạn không muốn tạo GitHub Release tự động cho mỗi push, bạn NÊN XÓA bước này.
+      uses: softprops/action-gh-release@v2
+      with:
+        # Sử dụng thuộc tính `tag_name` để lấy tên commit SHA hoặc một giá trị duy nhất khác.
+        # Nếu không có tag, nó sẽ tạo release dựa trên HEAD commit.
+        tag_name: ${{ github.sha }}
+        files: ./publish/*
+        draft: true # Nên đặt là draft nếu không dùng tag
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
